@@ -1,10 +1,100 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-   <Button>
-    Click Me
-   </Button>
-  );
+    const { data: session } = authClient.useSession();
+    
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [isSignUp, setIsSignUp] = useState(true);
+
+    const onSignUp = () => {
+        authClient.signUp.email({
+            email,
+            name,
+            password,
+        }, {
+            onError: () => {
+                window.alert("Sign up failed - Something went wrong");
+            },
+            onSuccess: () => {
+                window.alert("Account created successfully!");
+            }
+        });
+    };
+
+    const onSignIn = () => {
+        authClient.signIn.email({
+            email,
+            password,
+        }, {
+            onError: () => {
+                window.alert("Sign in failed - Check your credentials");
+            },
+            onSuccess: () => {
+                window.alert("Signed in successfully!");
+            }
+        });
+    };
+
+    if (session) {
+        return (
+            <div className="flex flex-col p-4 gap-y-4">
+                <p>Logged in as {session.user.name}</p>
+                <Button onClick={() => authClient.signOut()}>
+                    Sign Out
+                </Button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-4 flex flex-col gap-y-4 max-w-md mx-auto">
+            <div className="flex gap-2 mb-4">
+                <Button 
+                    variant={isSignUp ? "default" : "outline"} 
+                    onClick={() => setIsSignUp(true)}
+                >
+                    Sign Up
+                </Button>
+                <Button 
+                    variant={!isSignUp ? "default" : "outline"} 
+                    onClick={() => setIsSignUp(false)}
+                >
+                    Sign In
+                </Button>
+            </div>
+            
+            {isSignUp && (
+                <Input 
+                    placeholder="Full Name" 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)} 
+                />
+            )}
+            
+            <Input 
+                placeholder="Email" 
+                type="email"
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+            />
+            
+            <Input 
+                placeholder="Password" 
+                type="password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+            />
+            
+            <Button onClick={isSignUp ? onSignUp : onSignIn}>
+                {isSignUp ? "Create Account" : "Sign In"}
+            </Button>
+        </div>
+    );
 }
