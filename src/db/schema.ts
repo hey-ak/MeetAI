@@ -54,12 +54,10 @@ export const agents =pgTable("agents",{
     .primaryKey()
     .$defaultFn(()=> nanoid()),
     name:text("name")
-    .notNull()
-    .references(()=>user.id,{onDelete:"cascade"}),
+    .notNull(),
     instructions:text("instructions").notNull(),
+    userId: text("user_id").notNull().references(()=>user.id, { onDelete: "cascade" }),
     createdAt:timestamp("created_at").notNull().defaultNow(),
     updatedAt:timestamp("updated_at").notNull().defaultNow()
-
-
 
 })
