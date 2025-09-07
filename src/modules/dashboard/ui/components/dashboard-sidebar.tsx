@@ -23,7 +23,7 @@ const firstSection = [
     {
         icon: VideoIcon,
         label: "Meetings",
-        href: "/meeting"
+        href: "/meetings"
     }, {
         icon: BotIcon,
         label: "Agents",
